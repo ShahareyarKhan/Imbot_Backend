@@ -5,6 +5,16 @@ const jwt = require("jsonwebtoken");
 const express = require("express");
 const router = express.Router();
 
+const authenticateToken = (req, res, next) => {
+    const token = req.headers['authorization'];
+    if (token == null) return res.sendStatus(401);
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
+};
+
 router.post("/signup", async (req, res) => {
     try {
         let user = await User.findOne({ email: req.body.email });
@@ -42,6 +52,7 @@ router.post('/login', async (req, res) => {
 
     try {
         let user = await User.findOne({ email });
+        
         if (!user) {
             return res.status(400).json({ error: "Invalid Credentials." });
         }
@@ -76,4 +87,28 @@ router.get('/getuser', async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 })
+
+router.post('/search', async (req, res) => {
+    try {
+        const { query } = req.body;
+
+        if (!query || typeof query !== 'string') {
+            return res.status(400).json({ error: "Query parameter is required and must be a string" });
+        }
+
+        const users = await User.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { email: { $regex: query, $options: 'i' } }
+            ]
+        }).select("-password");
+
+        res.json({ success: true, users });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+
 module.exports=router;

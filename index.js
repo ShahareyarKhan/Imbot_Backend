@@ -2,7 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 dotenv.config();
 const connectDB = require('./db');
-const cors = require('cors');
+const cors = require('cors'); // frontend can access backend
 
 const app = express();
 
