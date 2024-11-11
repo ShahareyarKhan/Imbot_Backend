@@ -122,4 +122,16 @@ router.post('/search', async (req, res) => {
     }
 });
 
+router.get('/find-user/:userId', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId).select('-password'); // Exclude the password from the response
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json(user); // Send the user data without the password
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 module.exports = router; // Export router
