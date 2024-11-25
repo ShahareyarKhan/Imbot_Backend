@@ -97,6 +97,10 @@ router.get('/getuser', async (req, res) => {
     }
 });
 
+router.get('/', async (req, res) => {
+    console.log("Hello")
+})
+
 // Route to search users by name or email
 router.post('/search', async (req, res) => {
     try {
@@ -133,5 +137,31 @@ router.get('/find-user/:userId', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+
+router.delete('/delete-bot/:userId/:botId', async (req, res) => {
+    const { userId, botId } = req.params;
+
+    try {
+        // Find the user and delete the bot
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const botIndex = user.bots.findIndex(bot => bot._id.toString() === botId);
+        if (botIndex === -1) {
+            return res.status(404).json({ error: "Bot not found" });
+        }
+
+        user.bots.splice(botIndex, 1); // Remove the bot from the user's bots array
+        await user.save();
+
+        res.status(200).json({ message: "Bot deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting bot:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 
 module.exports = router; // Export router
