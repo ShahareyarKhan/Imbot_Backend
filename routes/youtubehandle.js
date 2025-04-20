@@ -11,7 +11,7 @@ router.post('/get-transcript', async (req, res) => {
     res.json({ transcript: fullText });
   } catch (error) {
     console.error('Transcript error:', error);
-    res.status(500).json({ error: 'Failed to fetch transcript' });
+    res.status(500).json({ error});
   }
 });
 
