@@ -36,6 +36,7 @@ app.get('/', (req, res) => {
 // Define routes for authentication and PDF handling
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/pdf', require('./routes/pdfhandle'));
+app.use('/api/youtube', require('./routes/youtubehandle'));
 
 // Start server and listen on port 3000
 app.listen(3000, () => {
